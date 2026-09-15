@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>a question for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ══ ambient layers ══ -->
+  <div class="sky"></div>
+  <div class="vignette"></div>
+  <canvas id="stars"></canvas>
+  <div id="hearts" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- ══ sound toggle ══ -->
+  <button id="soundBtn" class="sound" aria-label="toggle music" title="music">
+    <span class="note">♪</span><span class="slash"></span>
+  </button>
+  <div id="tapHint" class="tap-hint">tap anywhere for sound ♪</div>
+
+  <!-- ══ screen 1 : hi lol ══ -->
+  <section id="s-intro" class="screen is-on">
+    <div class="curtain"></div>
+    <h1 class="hilol">hi lol</h1>
+  </section>
+
+  <!-- ══ screen 2 : the question ══ -->
+  <section id="s-ask" class="screen">
+    <div class="stage">
+      <div class="char-wrap boy-wrap">
+        <div id="bubble" class="bubble" aria-live="polite"><span id="bubbleText"></span></div>
+        <div id="charAnim" class="char-anim">
+          <img id="boy" class="char char-boy" src="assets/boy.png" alt="me, in 8 bits">
+        </div>
+        <div class="char-shadow"></div>
+      </div>
+
+      <div class="content">
+        <p class="kicker">&#9670; a very important question &#9670;</p>
+        <h2 id="q" class="question"><span id="qtext"></span><span class="caret">_</span></h2>
+        <div id="btns" class="btns">
+          <button id="yesBtn" class="pbtn yes">YES</button>
+          <button id="noBtn"  class="pbtn no">NO</button>
+        </div>
+        <p id="nudge" class="nudge"></p>
+      </div>
+
+      <div class="char-wrap girl-wrap">
+        <div class="char-anim">
+          <img id="char" class="char char-girl" src="assets/girl.png" alt="you, in 8 bits">
+        </div>
+        <div class="char-shadow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ screen 3 : she said yes ══ -->
+  <section id="s-win" class="screen">
+    <h2 id="winTitle" class="win-title">IT&#39;S A DATE!</h2>
+    <div class="win-stage">
+      <div class="couple">
+        <div id="coupleHearts" class="couple-hearts" aria-hidden="true"></div>
+        <img class="cchar cboy"  src="assets/boy.png"  alt="">
+        <img class="cchar cgirl" src="assets/girl.png" alt="">
+      </div>
+      <div class="tv">
+        <div class="tv-inner"><div id="player"></div></div>
+      </div>
+    </div>
+    <p class="win-sub">see you soon &#9829;</p>
+  </section>
+
+  <!-- hidden background-music player -->
+  <div id="music" class="music-host"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

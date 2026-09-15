@@ -1,0 +1,537 @@
+/* ═══════════════════════════════════════════════════════════
+   palette — sampled from the night-sky bg + her character
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --night-0:#1b1830;      /* deepest */
+  --night-1:#252140;
+  --night-2:#2d274a;
+  --night-3:#403869;
+  --haze  :#4d457b;
+  --cloud :#5b518c;
+  --cloud-hi:#8b80bd;
+  --moon  :#f2ecd8;       /* warm cream */
+  --moon-dim:#cfc7ae;
+
+  --rose  :#c0405c;       /* her bag */
+  --rose-dk:#8e2a41;
+  --rose-hi:#e0718a;
+  --sky-b :#6fa3d6;       /* her top */
+  --cream :#e8dcc0;       /* her trousers */
+
+  --ink   :#15121f;       /* pixel outline */
+  --px    :4px;           /* one "pixel" unit */
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--night-0);
+  color:var(--moon);
+  font-family:"Pixelify Sans","Press Start 2P",monospace;
+  overflow:hidden; overflow-x:hidden; max-width:100%;
+  -webkit-font-smoothing:none;
+  -webkit-tap-highlight-color:transparent;
+  text-rendering:geometricPrecision;
+}
+
+/* ═══ background layers ═══════════════════════════════════ */
+.sky{
+  position:fixed; inset:0; z-index:0;
+  background:
+    url("assets/sky.jpg") center 30% / cover no-repeat,
+    linear-gradient(180deg,var(--night-1) 0%,var(--night-0) 100%);
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  animation:skyDrift 44s ease-in-out infinite alternate;
+}
+@keyframes skyDrift{ from{background-position:46% 28%,0 0} to{background-position:54% 34%,0 0} }
+
+/* darken top+bottom so text always reads */
+.vignette{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(21,18,31,.72) 0%,rgba(21,18,31,.18) 30%,rgba(21,18,31,.26) 62%,rgba(21,18,31,.82) 100%),
+    radial-gradient(120% 78% at 50% 46%,transparent 38%,rgba(21,18,31,.62) 100%);
+}
+
+#stars{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+
+/* CRT scanlines — very subtle */
+.scanlines{
+  position:fixed; inset:0; z-index:90; pointer-events:none;
+  background:repeating-linear-gradient(180deg,
+    rgba(0,0,0,.16) 0 1px, rgba(0,0,0,0) 1px 3px);
+  mix-blend-mode:multiply; opacity:.5;
+}
+
+#hearts{ position:fixed; inset:0; z-index:3; pointer-events:none; overflow:hidden }
+.heart{
+  position:absolute; width:6px; height:6px; opacity:0;
+  color:var(--rose); background:currentColor;
+  /* 8-bit heart: 5x5 pixel grid drawn with box-shadows */
+  box-shadow:
+     12px  0px 0 0 currentColor,
+     -6px  6px 0 0 currentColor,  0px  6px 0 0 currentColor,   6px  6px 0 0 currentColor,
+     12px  6px 0 0 currentColor, 18px  6px 0 0 currentColor,
+     -6px 12px 0 0 currentColor,  0px 12px 0 0 currentColor,   6px 12px 0 0 currentColor,
+     12px 12px 0 0 currentColor, 18px 12px 0 0 currentColor,
+      0px 18px 0 0 currentColor,  6px 18px 0 0 currentColor,  12px 18px 0 0 currentColor,
+      6px 24px 0 0 currentColor;
+  animation:floatUp linear forwards;
+}
+@keyframes floatUp{
+  0%  { transform:translateY(0) scale(.5) rotate(0deg);   opacity:0 }
+  12% { opacity:.55 }
+  80% { opacity:.35 }
+  100%{ transform:translateY(-78vh) scale(.5) rotate(14deg); opacity:0 }
+}
+
+/* ═══ screens ═════════════════════════════════════════════ */
+.screen{
+  position:fixed; inset:0; z-index:10;
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);
+}
+.screen.is-on{ display:flex }
+.screen.fading{ animation:screenOut .85s ease forwards }
+@keyframes screenOut{ to{opacity:0; filter:blur(3px)} }
+
+/* ─── screen 1 : hi lol ─────────────────────────────────── */
+.curtain{
+  position:absolute; inset:0; z-index:-1;
+  background:var(--night-0);
+  animation:curtainLift 1.1s ease 2.5s forwards;
+}
+@keyframes curtainLift{ to{opacity:0} }
+
+.hilol{
+  margin:0;
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(2.1rem,11vw,5.5rem);
+  letter-spacing:.06em;
+  color:var(--moon);
+  text-shadow:
+    var(--px) var(--px) 0 var(--rose-dk),
+    0 0 26px rgba(242,236,216,.35),
+    0 0 60px rgba(192,64,92,.25);
+  animation:
+    hiIn  .5s steps(3) .35s backwards,
+    flicker 2.4s steps(1) .9s 1,
+    hiOut .7s ease 2.7s forwards;
+}
+@keyframes hiIn { from{opacity:0;transform:scale(.86)} to{opacity:1;transform:scale(1)} }
+@keyframes hiOut{ to{opacity:0;transform:scale(1.12) translateY(-8px); filter:blur(2px)} }
+@keyframes flicker{
+  0%,88%,100%{opacity:1} 90%{opacity:.35} 92%{opacity:1} 94%{opacity:.5} 96%{opacity:1}
+}
+
+/* ─── screen 2 : the ask ────────────────────────────────── */
+.stage{
+  width:min(1180px,100%); height:100%;
+  display:flex; align-items:center; justify-content:center;
+  gap:clamp(8px,4vw,64px);
+}
+
+.char-wrap{ position:relative; flex:0 0 auto; display:flex; flex-direction:column; align-items:center }
+.char{
+  height:min(66vh,580px); width:auto; display:block;
+  image-rendering:pixelated; image-rendering:crisp-edges;
+  filter:drop-shadow(0 0 22px rgba(139,128,189,.45)) drop-shadow(var(--px) var(--px) 0 rgba(21,18,31,.55));
+  animation:charIn .9s cubic-bezier(.2,.9,.3,1.2) .25s backwards, bob 4.2s ease-in-out 1.2s infinite;
+}
+@keyframes charIn{ from{opacity:0; transform:translateX(-40px) scale(.94)} to{opacity:1; transform:none} }
+@keyframes charInR{ from{opacity:0; transform:translateX(40px) scale(.94)} to{opacity:1; transform:none} }
+.girl-wrap .char{ animation:charInR .9s cubic-bezier(.2,.9,.3,1.2) .38s backwards, bob 4.2s ease-in-out 1.4s infinite }
+.girl-wrap .char-shadow{ animation-delay:1.4s }
+@keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.char-shadow{
+  width:46%; height:14px; margin-top:-6px; border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(21,18,31,.6),transparent 70%);
+  animation:shadowPulse 4.2s ease-in-out 1.2s infinite;
+}
+@keyframes shadowPulse{ 0%,100%{transform:scaleX(1);opacity:.75} 50%{transform:scaleX(.86);opacity:.5} }
+
+.content{
+  flex:1 1 460px; max-width:640px; text-align:center;
+  position:relative;
+  padding:clamp(24px,4.2vh,40px) clamp(20px,3.2vw,44px);
+  background:rgba(21,18,31,.78);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--haze),
+    0 var(--px) 0 0 var(--haze),
+    calc(var(--px) * -1) 0 0 0 var(--haze),
+    var(--px) 0 0 0 var(--haze),
+    0 0 54px rgba(21,18,31,.75);
+  animation:panelIn .8s cubic-bezier(.2,.9,.3,1.15) .45s backwards;
+}
+@keyframes panelIn{ from{opacity:0; transform:translateY(16px) scale(.97)} to{opacity:1; transform:none} }
+
+.kicker{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.5rem,1.5vw,.72rem);
+  letter-spacing:.14em; color:var(--moon-dim);
+  margin:0 0 clamp(14px,3vh,26px);
+  animation:fadeUp .7s ease 1s backwards;
+  text-shadow:0 2px 0 rgba(21,18,31,.9);
+}
+
+.question{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(1.05rem,3.1vw,1.85rem);
+  line-height:1.8; margin:0 0 clamp(24px,5vh,44px);
+  white-space:pre-line; overflow-wrap:break-word;
+  color:var(--moon); letter-spacing:.02em;
+  text-shadow:
+    3px 3px 0 var(--ink),
+    0 0 34px rgba(242,236,216,.28);
+  min-height:5.4em;
+}
+.caret{ color:var(--rose-hi); animation:blink 1s steps(1) infinite }
+.caret.done{ animation:none; opacity:0 }
+@keyframes blink{ 50%{opacity:0} }
+
+.btns{
+  display:flex; gap:clamp(12px,2.6vw,26px);
+  justify-content:center; align-items:center; flex-wrap:wrap;
+  opacity:0; pointer-events:none;
+}
+.btns.show{ opacity:1; pointer-events:auto; animation:fadeUp .55s cubic-bezier(.2,.9,.3,1.3) backwards }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+
+/* ─── the 8-bit button ──────────────────────────────────── */
+.pbtn{
+  position:relative; cursor:pointer; border:0; outline:0;
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.68rem,1.75vw,1rem);
+  line-height:1.5;
+  padding:clamp(14px,2.2vh,20px) clamp(20px,3.4vw,34px);
+  color:var(--moon);
+  letter-spacing:.06em;
+  background:var(--haze);
+  transition:transform .12s steps(2), filter .18s ease, background .25s ease, font-size .3s ease, padding .3s ease;
+  /* classic notched pixel border */
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink),
+    0 calc(var(--px) * 2) 0 0 rgba(21,18,31,.55);
+  text-shadow:0 2px 0 rgba(21,18,31,.7);
+}
+.pbtn::after{ /* inner top highlight = plastic keycap feel */
+  content:""; position:absolute; left:0; right:0; top:0; height:var(--px);
+  background:rgba(255,255,255,.22);
+}
+.pbtn:hover{ transform:translateY(-3px); filter:brightness(1.14) }
+.pbtn:active{ transform:translateY(var(--px));
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink);
+}
+.pbtn:focus-visible{ outline:var(--px) solid var(--cloud-hi); outline-offset:calc(var(--px) * 2) }
+
+.pbtn.yes{ background:var(--rose); }
+.pbtn.yes:hover{ background:var(--rose-hi) }
+.pbtn.no { background:var(--haze); }
+.pbtn.no:hover{ background:var(--cloud) }
+
+/* yes-button grows as the pleading escalates */
+.pbtn.yes.step1{ font-size:clamp(.7rem,1.9vw,1.08rem) }
+.pbtn.yes.step2{ font-size:clamp(.76rem,2.1vw,1.18rem); background:var(--rose-hi) }
+.pbtn.yes.step3{
+  font-size:clamp(.66rem,1.85vw,1.05rem);
+  background:var(--rose-hi); max-width:min(92vw,620px);
+  animation:shakeWin .5s steps(2) 2;
+}
+@keyframes shakeWin{ 0%,100%{transform:none} 25%{transform:translate(-3px,1px)} 75%{transform:translate(3px,-1px)} }
+
+/* no-button shrinks + loses nerve */
+.pbtn.no.n1{ transform:scale(.88); opacity:.9 }
+.pbtn.no.n2{ transform:scale(.72); opacity:.72 }
+.pbtn.no.gone{ transform:scale(.2) rotate(-14deg); opacity:0; pointer-events:none; transition:all .5s ease }
+
+
+/* ── reactions: applied to a wrapper so .char keeps its idle bob ── */
+.char-anim{ display:block; transform-origin:50% 100% }
+.char-anim.sad  { animation:slump 1.1s ease-in-out both }
+.char-anim.happy{ animation:hop 1s cubic-bezier(.25,.9,.3,1.3) both }
+
+@keyframes slump{
+  0%  { transform:none }
+  18% { transform:translateY(6px) rotate(-3deg) }
+  36% { transform:translateY(8px) rotate(3deg) }
+  54% { transform:translateY(8px) rotate(-2.5deg) }
+  72% { transform:translateY(8px) rotate(2deg) }
+  100%{ transform:translateY(3px) rotate(0deg) }
+}
+@keyframes hop{
+  0%  { transform:none }
+  25% { transform:translateY(-42px) scale(1.04) rotate(-8deg) }
+  50% { transform:translateY(-58px) rotate(180deg) }
+  75% { transform:translateY(-42px) rotate(352deg) }
+  100%{ transform:translateY(0) rotate(360deg) }
+}
+
+/* ── 8-bit speech bubble ─────────────────────────────────── */
+.bubble{
+  position:absolute; z-index:6;
+  left:78%; top:6%;
+  min-width:max-content; max-width:min(46vw,300px);
+  padding:12px 14px;
+  background:var(--moon); color:var(--ink);
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.5rem,1.15vw,.68rem); line-height:1.7;
+  text-align:left;
+  opacity:0; transform:translateY(8px) scale(.9); pointer-events:none;
+  transition:opacity .18s steps(2), transform .18s cubic-bezier(.2,.9,.3,1.4);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink), 0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink), var(--px) 0 0 0 var(--ink),
+    0 calc(var(--px) * 2) 0 calc(var(--px) * 1) rgba(21,18,31,.45);
+}
+.bubble.show{ opacity:1; transform:translateY(0) scale(1) }
+/* stepped tail pointing back at her */
+.bubble::before,
+.bubble::after{ content:""; position:absolute; background:var(--moon) }
+.bubble::before{ left:calc(var(--px) * -2); bottom:16px; width:calc(var(--px) * 2); height:var(--px);
+  box-shadow:0 var(--px) 0 0 var(--ink), calc(var(--px) * -1) 0 0 0 var(--ink) }
+.bubble::after { left:calc(var(--px) * -4); bottom:12px; width:calc(var(--px) * 2); height:var(--px);
+  box-shadow:0 var(--px) 0 0 var(--ink), calc(var(--px) * -1) 0 0 0 var(--ink) }
+
+/* ── idle nudge under the buttons ────────────────────────── */
+.nudge{
+  margin:clamp(14px,2.4vh,22px) 0 0;
+  min-height:1.2em;
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.45rem,1.15vw,.6rem);
+  letter-spacing:.08em; color:var(--cloud-hi);
+  opacity:0; transition:opacity .7s ease;
+  text-shadow:0 2px 0 rgba(21,18,31,.9);
+}
+.nudge.show{ opacity:.9 }
+
+/* ─── screen 3 : the payoff ─────────────────────────────── */
+.win-title{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(1.05rem,4vw,2.3rem);
+  margin:0 0 clamp(14px,2.4vh,24px); color:var(--moon);
+  letter-spacing:.04em; text-align:center;
+  text-shadow:var(--px) var(--px) 0 var(--rose-dk), 0 0 34px rgba(242,236,216,.3);
+  animation:fadeUp .7s ease backwards, glowPulse 3s ease-in-out infinite 1s;
+}
+@keyframes glowPulse{
+  0%,100%{ text-shadow:var(--px) var(--px) 0 var(--rose-dk), 0 0 30px rgba(242,236,216,.26) }
+  50%    { text-shadow:var(--px) var(--px) 0 var(--rose-dk), 0 0 46px rgba(224,113,138,.5) }
+}
+
+/* the "TV" — a chunky pixel frame around the vertical video */
+.tv{
+  position:relative;
+  width:min(48vw, calc(62vh * 9 / 16), 330px);
+  aspect-ratio:9/16;
+  background:var(--night-1);
+  padding:var(--px);
+  box-shadow:
+    0 calc(var(--px) * -2) 0 0 var(--ink),
+    0 calc(var(--px) * 2) 0 0 var(--ink),
+    calc(var(--px) * -2) 0 0 0 var(--ink),
+    calc(var(--px) * 2) 0 0 0 var(--ink),
+    0 0 0 calc(var(--px) * 3) var(--cloud),
+    0 calc(var(--px) * 3) 0 calc(var(--px) * 3) rgba(21,18,31,.6),
+    0 0 60px rgba(139,128,189,.35);
+  animation:fadeUp .8s ease .15s backwards;
+}
+.tv-inner{ position:relative; width:100%; height:100%; overflow:hidden; background:#000 }
+.tv-inner iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block }
+
+/* overlay shown when youtube will not autoplay or will not load at all */
+#tvOverlay{
+  position:absolute; inset:0; z-index:5;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; padding:18px; text-align:center;
+  background:rgba(21,18,31,.9);
+}
+.tv-msg{
+  margin:0; font-family:"Press Start 2P",monospace;
+  font-size:clamp(.55rem,2.4vw,.72rem); line-height:1.9; color:var(--moon);
+}
+.tv-sub{ color:var(--cloud-hi); font-size:.85em }
+.tv-btn{
+  display:inline-block; cursor:pointer; border:0; text-decoration:none;
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.6rem,2.6vw,.8rem);
+  padding:14px 20px; color:var(--moon); background:var(--rose);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink), 0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink), var(--px) 0 0 0 var(--ink),
+    0 calc(var(--px) * 2) 0 0 rgba(21,18,31,.55);
+  transition:transform .12s steps(2), filter .18s ease;
+}
+.tv-btn:hover{ transform:translateY(-3px); filter:brightness(1.15) }
+.tv-btn:active{ transform:translateY(var(--px)) }
+.tv-btn.ghost{ background:var(--haze); font-size:.62rem; padding:11px 16px }
+
+.win-sub{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(.55rem,1.6vw,.8rem);
+  color:var(--cloud-hi); letter-spacing:.12em;
+  margin:clamp(24px,3.6vh,36px) 0 0;
+  animation:fadeUp .8s ease .4s backwards;
+  text-shadow:0 2px 0 rgba(21,18,31,.8);
+}
+
+
+/* ═══ screen 3 : the two of them ══════════════════════════ */
+.win-stage{
+  display:flex; align-items:center; justify-content:center;
+  gap:clamp(12px,3vw,48px); width:100%;
+}
+
+.couple{
+  position:relative; flex:0 0 auto;
+  display:flex; align-items:flex-end; justify-content:center;
+  gap:clamp(2px,0.8vw,14px);
+}
+.cchar{
+  height:min(46vh,380px); width:auto; display:block;
+  image-rendering:pixelated; image-rendering:crisp-edges;
+  filter:drop-shadow(0 0 20px rgba(139,128,189,.4)) drop-shadow(var(--px) var(--px) 0 rgba(21,18,31,.5));
+}
+/* they walk in from either side and end up shoulder to shoulder */
+.cboy { animation:closeInL 1.5s cubic-bezier(.25,.9,.3,1.05) backwards, bob 4.4s ease-in-out 1.6s infinite }
+.cgirl{ animation:closeInR 1.5s cubic-bezier(.25,.9,.3,1.05) backwards, bob 4.4s ease-in-out 1.9s infinite }
+@keyframes closeInL{ from{opacity:0; transform:translateX(-120px)} to{opacity:1; transform:translateX(0)} }
+@keyframes closeInR{ from{opacity:0; transform:translateX(120px)}  to{opacity:1; transform:translateX(0)} }
+
+/* little hearts drifting around the pair -- behind them, never over a face */
+.couple-hearts{
+  position:absolute; left:-34%; right:-34%; top:-8%; bottom:0;
+  z-index:0; pointer-events:none; overflow:visible;
+}
+.cchar{ position:relative; z-index:2 }
+
+.mini-heart{
+  position:absolute; width:5px; height:5px; opacity:0;
+  color:var(--rose-hi); background:currentColor;
+  box-shadow:
+     10px  0px 0 0 currentColor,
+     -5px  5px 0 0 currentColor,  0px  5px 0 0 currentColor,   5px  5px 0 0 currentColor,
+     10px  5px 0 0 currentColor, 15px  5px 0 0 currentColor,
+     -5px 10px 0 0 currentColor,  0px 10px 0 0 currentColor,   5px 10px 0 0 currentColor,
+     10px 10px 0 0 currentColor, 15px 10px 0 0 currentColor,
+      0px 15px 0 0 currentColor,  5px 15px 0 0 currentColor,  10px 15px 0 0 currentColor,
+      5px 20px 0 0 currentColor;
+  animation:driftUp linear forwards;
+}
+@keyframes driftUp{
+  0%  { transform:translateY(0) scale(.6);        opacity:0 }
+  15% { opacity:.85 }
+  70% { opacity:.6 }
+  100%{ transform:translateY(-190px) scale(.85) rotate(10deg); opacity:0 }
+}
+
+/* ═══ sound control ═══════════════════════════════════════ */
+.sound{
+  position:fixed; z-index:95;
+  top:calc(env(safe-area-inset-top,0px) + 14px); right:14px;
+  width:46px; height:46px; cursor:pointer; border:0;
+  display:grid; place-items:center;
+  background:rgba(37,33,64,.82); color:var(--moon);
+  font-size:20px; line-height:1;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink), 0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink), var(--px) 0 0 0 var(--ink);
+  transition:transform .12s steps(2), background .2s ease;
+}
+.sound:hover{ transform:translateY(-2px); background:rgba(77,69,123,.92) }
+.sound .slash{
+  position:absolute; width:30px; height:3px; background:var(--rose-hi);
+  transform:rotate(-45deg); opacity:0; transition:opacity .2s ease;
+}
+.sound.muted .slash{ opacity:1 }
+.sound.muted .note{ opacity:.45 }
+
+.tap-hint{
+  position:fixed; z-index:95;
+  top:calc(env(safe-area-inset-top,0px) + 24px); right:70px;
+  font-family:"Press Start 2P",monospace; font-size:.5rem;
+  color:var(--cloud-hi); letter-spacing:.06em; white-space:nowrap;
+  opacity:0; transition:opacity .4s ease; pointer-events:none;
+  text-shadow:0 2px 0 rgba(21,18,31,.9);
+}
+.tap-hint.show{ opacity:1; animation:blinkSoft 1.6s ease-in-out infinite }
+@keyframes blinkSoft{ 50%{opacity:.4} }
+
+/* the music player needs REAL size and to sit inside the viewport --
+   youtube refuses to play from a 1x1 offscreen/invisible iframe.
+   so give it a proper box and hide it *behind* the opaque sky layer. */
+.music-host{
+  position:fixed; right:0; bottom:0;
+  width:200px; height:113px;
+  z-index:-1; pointer-events:none; border:0;
+}
+.music-host iframe{ width:100%; height:100%; border:0 }
+
+/* when sound is off, make the speaker button ask to be pressed */
+.sound.muted{ animation:soundNudge 1.6s ease-in-out infinite }
+@keyframes soundNudge{
+  0%,100%{ box-shadow:0 calc(var(--px) * -1) 0 0 var(--ink),0 var(--px) 0 0 var(--ink),
+           calc(var(--px) * -1) 0 0 0 var(--ink),var(--px) 0 0 0 var(--ink),0 0 0 0 rgba(224,113,138,0) }
+  50%    { box-shadow:0 calc(var(--px) * -1) 0 0 var(--ink),0 var(--px) 0 0 var(--ink),
+           calc(var(--px) * -1) 0 0 0 var(--ink),var(--px) 0 0 0 var(--ink),0 0 18px 4px rgba(224,113,138,.55) }
+}
+
+/* diagnostics overlay (#diag) */
+#diag{
+  position:fixed; left:8px; bottom:8px; z-index:9999;
+  background:rgba(10,8,16,.92); color:#cfe8b0; border:2px solid #4d457b;
+  font:11px/1.5 ui-monospace,Menlo,monospace; padding:8px 10px; white-space:pre;
+  max-width:92vw; pointer-events:none;
+}
+
+/* ═══ responsive : phone ══════════════════════════════════ */
+@media (max-width:860px){
+  .stage{
+    flex-direction:row; flex-wrap:wrap; align-items:flex-end;
+    align-content:center; justify-content:center; gap:0 4px;
+  }
+  .boy-wrap { order:1 }
+  .girl-wrap{ order:2 }
+  .content  { order:3; flex:0 0 100%; margin-top:clamp(6px,1.6vh,14px) }
+  .content{ flex:0 0 auto; width:100%; padding:clamp(16px,2.8vh,24px) 14px }
+  .bubble{ left:50%; top:-6px; transform:translate(-50%,8px) scale(.9); max-width:86vw; font-size:.52rem }
+  .bubble.show{ transform:translate(-50%,0) scale(1) }
+  .bubble::before,.bubble::after{ display:none }
+  .nudge{ margin-top:12px }
+  .char{ height:min(26vh,230px); animation:charIn .9s cubic-bezier(.2,.9,.3,1.2) .25s backwards, bob 4.2s ease-in-out 1.2s infinite }
+  @keyframes charIn{ from{opacity:0; transform:translateY(30px) scale(.94)} to{opacity:1; transform:none} }
+  .question{ font-size:clamp(1rem,5vw,1.5rem); line-height:1.75; margin-bottom:clamp(16px,3vh,28px) }
+  .btns{ gap:12px }
+  .pbtn{ padding:14px 20px }
+  .tap-hint{ top:calc(env(safe-area-inset-top,0px) + 66px); right:14px; font-size:.44rem }
+  .tv{ width:min(86vw, calc(46vh * 9 / 16), 300px) }
+  .win-stage{ flex-direction:column; gap:clamp(6px,1.4vh,14px) }
+  .cchar{ height:min(20vh,170px) }
+}
+
+@media (max-width:420px){
+  :root{ --px:3px }
+  .question{ font-size:4.8vw; line-height:1.8 }
+  .pbtn{ font-size:.62rem; padding:13px 18px }
+  .char{ height:min(23vh,200px) }
+}
+
+/* short-and-wide (laptop in landscape, phone sideways) */
+@media (max-height:560px) and (min-width:861px){
+  .char{ height:min(80vh,460px) }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important }
+  .curtain{ opacity:0 }
+}
